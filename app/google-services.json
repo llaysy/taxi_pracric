@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "523426565731",
+    "firebase_url": "https://taxoi-4112d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "taxoi-4112d",
+    "storage_bucket": "taxoi-4112d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:523426565731:android:91e28c89f34dc78b45f256",
+        "android_client_info": {
+          "package_name": "com.example.test_pracric"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAocVePlYRt32foFhO_-KRetNoOYfABI8A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
