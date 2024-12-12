@@ -11,6 +11,9 @@ import com.example.test_pracric.user.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
 
 class MainActivity : AppCompatActivity() {
 
@@ -33,10 +36,10 @@ class MainActivity : AppCompatActivity() {
         // Проверка на наличие текущего пользователя
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            // Если пользователь уже аутентифицирован, сразу переходим в HomeActivity
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
-            finish()
+            // Если пользователь уже аутентифицирован, проверяем его роль
+            // Инициализация DatabaseReference перед использованием
+            database = FirebaseDatabase.getInstance().reference
+            checkUserRole(currentUser.uid)
             return
         }
 
@@ -70,6 +73,27 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun checkUserRole(userId: String) {
+        database.child("drivers").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    // Если пользователь найден среди водителей, перенаправляем в DriverHomeActivity
+                    val intent = Intent(this@MainActivity, DriverHomeActivity::class.java)
+                    startActivity(intent)
+                } else {
+                    // Если пользователь не найден среди водителей, перенаправляем в HomeActivity
+                    val intent = Intent(this@MainActivity, HomeActivity::class.java)
+                    startActivity(intent)
+                }
+                finish() // Закрываем MainActivity
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Toast.makeText(this@MainActivity, "Ошибка проверки роли: ${error.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
+    }
+
     private fun signUpUser() {
         val email = etEmail.text.toString()
         val pass = etPass.text.toString()
@@ -82,9 +106,9 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
-        // Проверка на совпадение паролей
+        // Проверка совпадения паролей
         if (pass != confPass) {
-            Toast.makeText(this, "Пароль и пароль подтверждения не совпадают", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Пароль и подтверждение не совпадают", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -99,7 +123,7 @@ class MainActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val userId = auth.currentUser?.uid
                 if (userId != null) {
-                    // Создание объекта пользователя с рейтингом 5.00
+                    // Создание объекта пользователя с начальным рейтингом 5.00
                     val userData = UserData(name, email, 5.00f, false)
 
                     // Сохранение данных пользователя в Firebase

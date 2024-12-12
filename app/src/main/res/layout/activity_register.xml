@@ -6,6 +6,27 @@
     android:padding="16dp">
 
     <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Электронная почта"
+        android:inputType="textEmailAddress" />
+
+    <EditText
+        android:id="@+id/etPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Пароль"
+        android:inputType="textPassword" />
+
+    <EditText
+        android:id="@+id/etConfirmPassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Подтверждение пароля"
+        android:inputType="textPassword" />
+
+    <EditText
         android:id="@+id/etFullName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -13,32 +34,39 @@
         android:inputType="textPersonName" />
 
     <EditText
-        android:id="@+id/etPhoneNumber"
+        android:id="@+id/etPTS"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Номер телефона"
-        android:inputType="phone" />
+        android:hint="ПТС (в формате 00ТО000000)"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/etSTS"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="СТС (в формате 00AA000000)"
+        android:inputType="text" />
 
     <EditText
         android:id="@+id/etCarNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Номер машины"
-        android:inputType="textCapCharacters" />
+        android:hint="Номер машины (в формате A000AA00)"
+        android:inputType="text" />
+
+    <EditText
+        android:id="@+id/etPhoneNumber"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Номер телефона (11 цифр)"
+        android:inputType="phone" />
 
     <EditText
         android:id="@+id/etLicenseNumber"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Номер прав"
-        android:inputType="textCapCharacters" />
-
-    <EditText
-        android:id="@+id/etCarModel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Марка машины"
-        android:inputType="textCapWords" />
+        android:hint="Права (в формате 0000000000)"
+        android:inputType="text" />
 
     <Button
         android:id="@+id/btnRegister"

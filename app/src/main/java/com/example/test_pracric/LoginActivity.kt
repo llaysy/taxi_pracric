@@ -8,6 +8,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class LoginActivity : AppCompatActivity() {
 
@@ -21,7 +25,6 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
-        // Инициализация пользовательского интерфейса
         tvRedirectSignUp = findViewById(R.id.tvRedirectSignUp)
         btnLogin = findViewById(R.id.btnLogin)
         etEmail = findViewById(R.id.etEmailAddress)
@@ -29,17 +32,6 @@ class LoginActivity : AppCompatActivity() {
 
         auth = FirebaseAuth.getInstance()
 
-        // Проверка на наличие текущего пользователя
-        val currentUser = auth.currentUser
-        if (currentUser != null) {
-            // Если пользователь уже аутентифицирован, сразу переходим в HomeActivity
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
-            finish() // Завершить текущую активность, чтобы не возвращаться к ней
-            return
-        }
-
-        // Установка обработчиков событий
         btnLogin.setOnClickListener {
             login()
         }
@@ -50,6 +42,8 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+
+
     private fun login() {
         val email = etEmail.text.toString()
         val pass = etPass.text.toString()
@@ -57,9 +51,37 @@ class LoginActivity : AppCompatActivity() {
         auth.signInWithEmailAndPassword(email, pass).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 Toast.makeText(this, "Вход успешен!", Toast.LENGTH_SHORT).show()
-                val intent = Intent(this, HomeActivity::class.java)
-                startActivity(intent)
-                finish() // Завершить текущую активность
+
+                // Получаем текущего пользователя
+                val user = auth.currentUser
+                user?.let {
+                    val userId = it.uid
+                    val databaseReference = FirebaseDatabase.getInstance().getReference("drivers").child(userId)
+
+                    // Получаем данные о пользователе
+                    databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            // Проверяем, существует ли пользователь и его статус
+                            if (dataSnapshot.exists()) {
+                                val driver = dataSnapshot.child("isDriver").getValue(Boolean::class.java) ?: false
+                                val intent = if (driver) {
+                                    Intent(this@LoginActivity, DriverHomeActivity::class.java)
+                                } else {
+                                    Intent(this@LoginActivity, HomeActivity::class.java)
+                                }
+                                startActivity(intent)
+                            } else {
+                                // Если пользователь не найден, перенаправляем в HomeActivity
+                                startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                            }
+                            finish() // Закрываем текущую активность
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            Toast.makeText(this@LoginActivity, "Ошибка получения данных: ${databaseError.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
+                }
             } else {
                 Toast.makeText(this, "Ошибка входа", Toast.LENGTH_SHORT).show()
             }
