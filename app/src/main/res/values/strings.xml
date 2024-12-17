@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">test_pracric</string>
+    <string name="MAPS_API_KEY">AIzaSyDWjji17-4YYxzrDNoh9oo60HKg0vNnBFw</string>
 </resources>

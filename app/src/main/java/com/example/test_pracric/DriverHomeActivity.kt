@@ -117,15 +117,11 @@ class DriverHomeActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        if (auth.currentUser != null) {
-            auth.signOut()
-            Log.d("DriverHomeActivity", "User logged out successfully.")
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-            finish()
-        } else {
-            Toast.makeText(this, "Пользователь не аутентифицирован.", Toast.LENGTH_SHORT).show()
-        }
+        auth.signOut()
+        Toast.makeText(this, "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show()
+        val intent = Intent(this, MainActivity::class.java)
+        startActivity(intent)
+        finish() // Закрытие текущей активности
     }
 
     override fun onBackPressed() {

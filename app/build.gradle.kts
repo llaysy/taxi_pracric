@@ -37,9 +37,13 @@ android {
 }
 
 dependencies {
-        implementation ("org.osmdroid:osmdroid-android:6.1.10")
-        implementation ("com.squareup.okhttp3:okhttp:4.9.3")
-        implementation ("com.google.code.gson:gson:2.8.8")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.google.android.gms:play-services-location:21.3.0")
+    implementation("com.google.android.gms:play-services-maps:19.0.0")
+    implementation ("org.osmdroid:osmdroid-android:6.1.10")
+    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation ("com.google.code.gson:gson:2.8.8")
     implementation ("org.osmdroid:osmdroid-android:6.1.10")
     implementation ("com.google.android.material:material:1.4.0")
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))

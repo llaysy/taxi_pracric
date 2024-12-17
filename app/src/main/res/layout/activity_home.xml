@@ -25,14 +25,15 @@
             android:text="Welcome!"
             android:visibility="gone"
             android:layout_margin="16dp" />
+
         <Button
             android:id="@+id/btnWhereTo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Куда едем?"
             android:layout_gravity="center"
             android:layout_marginStart="101dp"
-            android:layout_marginTop="100dp"/>
+            android:layout_marginTop="100dp"
+            android:text="Куда едем?"/>
 
     </RelativeLayout>
 
@@ -88,6 +89,16 @@
             android:layout_weight="1"
             android:orientation="vertical"
             android:gravity="center">
+
+            <TextView
+                android:id="@+id/profile_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Профиль"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:gravity="center"
+                android:layout_marginBottom="8dp"/>
 
             <TextView
                 android:id="@+id/settings_text"

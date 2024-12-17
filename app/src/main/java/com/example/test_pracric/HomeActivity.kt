@@ -34,6 +34,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var logoutText: TextView
     private lateinit var paymentMethodLabel: TextView
     private lateinit var btnWhereTo: Button // Кнопка "Куда едем?"
+    private lateinit var profileText: TextView // Добавлено для профиля
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,9 +52,16 @@ class HomeActivity : AppCompatActivity() {
         logoutText = findViewById(R.id.logout_text)
         paymentMethodLabel = findViewById(R.id.payment_method_label)
         btnWhereTo = findViewById(R.id.btnWhereTo) // Инициализация кнопки
+        profileText = findViewById(R.id.profile_text) // Инициализация profile_text
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
+
+        // Обработчик нажатия на кнопку "Куда едем?"
+        btnWhereTo.setOnClickListener {
+            val intent = Intent(this, MapsActivity::class.java)
+            startActivity(intent)
+        }
 
         // Обработчик нажатия на иконку гамбургера
         hamburgerIcon.setOnClickListener {
@@ -65,11 +73,11 @@ class HomeActivity : AppCompatActivity() {
             showLogoutConfirmationDialog()
         }
 
-//        // Обработчик нажатия на кнопку "Куда едем?"
-//        btnWhereTo.setOnClickListener {
-//            val intent = Intent(this, MapActivity::class.java)
-//            startActivity(intent)
-//        }
+        // Обработчик нажатия на текст профиля
+        profileText.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+        }
 
         // Получение данных пользователя из базы данных
         val userId = auth.currentUser?.uid
@@ -163,7 +171,7 @@ class HomeActivity : AppCompatActivity() {
         Toast.makeText(this, "Вы вышли из аккаунта", Toast.LENGTH_SHORT).show()
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
-        finish()
+        finish() // Закрытие текущей активности
     }
 
     private fun toggleDrawer() {
