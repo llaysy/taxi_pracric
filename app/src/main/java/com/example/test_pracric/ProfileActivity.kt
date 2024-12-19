@@ -2,9 +2,12 @@ package com.example.test_pracric
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.example.test_pracric.doc.DocumentsActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -22,11 +25,12 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var genderTextView: TextView
     private lateinit var dobTextView: TextView
     private lateinit var emailTextView: TextView
-    private lateinit var backButton: ImageView // Добавьте переменную для кнопки "Назад"
+    private lateinit var backButton: ImageView
+    private lateinit var documentsTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_profile) // Убедитесь, что это соответствует имени вашего макета
+        setContentView(R.layout.activity_profile)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
@@ -36,20 +40,21 @@ class ProfileActivity : AppCompatActivity() {
         genderTextView = findViewById(R.id.genderTextView)
         dobTextView = findViewById(R.id.dobTextView)
         emailTextView = findViewById(R.id.emailTextView)
-        backButton = findViewById(R.id.backButton) // Убедитесь, что у вас есть ID для кнопки "Назад"
+        backButton = findViewById(R.id.backButton)
+        documentsTextView = findViewById(R.id.documentsTextView)
 
-        // Проверка наличия текущего пользователя
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            // Пользователь аутентифицирован
             checkUserRole(currentUser.uid)
-        } else {
-            // Обработка случая, когда пользователь не аутентифицирован
         }
 
-        // Обработка клика на кнопку "Назад"
         backButton.setOnClickListener {
             navigateBack()
+        }
+
+        documentsTextView.setOnClickListener {
+            val intent = Intent(this, DocumentsActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -58,34 +63,37 @@ class ProfileActivity : AppCompatActivity() {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
                     val isDriver = dataSnapshot.child("isDriver").getValue(Boolean::class.java) ?: false
+                    Log.d("ProfileActivity", "isDriver: $isDriver") // Проверка значения
+
                     val name = dataSnapshot.child("name").getValue(String::class.java) ?: "Не указано"
-                    val email = dataSnapshot.child("email").getValue(String::class.java) ?: "Не указано"
-
                     profileName.text = name
-                    emailTextView.text = email
 
-                    if (!isDriver) {
-                        // Для обычных пользователей
-                        val phone = dataSnapshot.child("phone").getValue(String::class.java) ?: "Не указано"
-                        val gender = dataSnapshot.child("gender").getValue(String::class.java) ?: "Не указан"
-                        val dob = dataSnapshot.child("dob").getValue(String::class.java) ?: "Не указано"
-
-                        phoneTextView.text = phone
-                        genderTextView.text = gender
-                        dobTextView.text = dob
-                    } else {
-                        // Для водителей
+                    if (isDriver) {
+                        // Убедитесь, что вы получаете правильные данные для водителя
                         phoneTextView.text = dataSnapshot.child("phone").getValue(String::class.java) ?: "Не указано"
                         genderTextView.text = "Не указан"
                         dobTextView.text = "Не указано"
+
+                        // Показать текст "Документы"
+                        documentsTextView.visibility = View.VISIBLE
+                        Log.d("ProfileActivity", "Documents should be visible for driver.")
+                    } else {
+                        // Для обычных пользователей
+                        phoneTextView.text = dataSnapshot.child("phone").getValue(String::class.java) ?: "Не указано"
+                        genderTextView.text = dataSnapshot.child("gender").getValue(String::class.java) ?: "Не указан"
+                        dobTextView.text = dataSnapshot.child("dob").getValue(String::class.java) ?: "Не указано"
+
+                        // Скрыть текст "Документы"
+                        documentsTextView.visibility = View.GONE
+                        Log.d("ProfileActivity", "Documents are hidden for regular user.")
                     }
                 } else {
-                    // Обработка случая, когда данные пользователя не найдены
+                    Log.d("ProfileActivity", "User data not found.")
                 }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Обработка возможных ошибок
+                Log.e("ProfileActivity", "Database error: ${databaseError.message}")
             }
         })
     }
@@ -103,7 +111,7 @@ class ProfileActivity : AppCompatActivity() {
                             Intent(this@ProfileActivity, HomeActivity::class.java)
                         }
                         startActivity(intent)
-                        finish() // Закрытие текущей активности
+                        finish()
                     }
                 }
 

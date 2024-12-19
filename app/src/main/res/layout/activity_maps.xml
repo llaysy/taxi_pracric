@@ -38,6 +38,12 @@
             android:hint="Куда" />
 
         <Button
+            android:id="@+id/showRouteButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Показать маршрут" />
+
+        <Button
             android:id="@+id/orderButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

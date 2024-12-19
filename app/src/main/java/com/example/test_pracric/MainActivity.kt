@@ -22,7 +22,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var etPass: EditText
     private lateinit var etName: EditText
     private lateinit var btnSignUp: Button
-    private lateinit var btnRegisterAsDriver: Button // Новая кнопка для регистрации водителя
+    private lateinit var btnRegisterAsDriver: Button
     private lateinit var tvRedirectLogin: TextView
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
@@ -37,7 +37,6 @@ class MainActivity : AppCompatActivity() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
             // Если пользователь уже аутентифицирован, проверяем его роль
-            // Инициализация DatabaseReference перед использованием
             database = FirebaseDatabase.getInstance().reference
             checkUserRole(currentUser.uid)
             return
@@ -51,7 +50,7 @@ class MainActivity : AppCompatActivity() {
         etPass = findViewById(R.id.etSPassword)
         etName = findViewById(R.id.etSName)
         btnSignUp = findViewById(R.id.btnSSigned)
-        btnRegisterAsDriver = findViewById(R.id.btnRegisterAsDriver) // Новая кнопка для регистрации водителя
+        btnRegisterAsDriver = findViewById(R.id.btnRegisterAsDriver)
         tvRedirectLogin = findViewById(R.id.tvRedirectLogin)
 
         // Инициализация DatabaseReference
@@ -62,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             signUpUser()
         }
 
-        btnRegisterAsDriver.setOnClickListener { // Обработчик для новой кнопки
+        btnRegisterAsDriver.setOnClickListener {
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
         }
@@ -123,15 +122,15 @@ class MainActivity : AppCompatActivity() {
             if (task.isSuccessful) {
                 val userId = auth.currentUser?.uid
                 if (userId != null) {
-                    // Создание объекта пользователя с начальным рейтингом 5.00
-                    val userData = UserData(name, email, 5.00f, false)
+                    // Создание объекта пользователя с установкой driver в true
+                    val userData = UserData(name, email, 5.00f, true) // Убедитесь, что здесь true для водителя
 
                     // Сохранение данных пользователя в Firebase
-                    database.child("users").child(userId).setValue(userData)
+                    database.child("drivers").child(userId).setValue(userData)
                         .addOnCompleteListener { dbTask ->
                             if (dbTask.isSuccessful) {
                                 Toast.makeText(this, "Регистрация успешна", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, HomeActivity::class.java)
+                                val intent = Intent(this, DriverHomeActivity::class.java) // Перенаправление на DriverHomeActivity
                                 startActivity(intent)
                                 finish()
                             } else {

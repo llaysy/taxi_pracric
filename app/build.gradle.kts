@@ -37,20 +37,17 @@ android {
 }
 
 dependencies {
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-    implementation ("com.google.android.gms:play-services-location:21.3.0")
+
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.maps.android:places-ktx:3.2.0")// Попробуйте эту версию
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
-    implementation ("org.osmdroid:osmdroid-android:6.1.10")
-    implementation ("com.squareup.okhttp3:okhttp:4.9.3")
-    implementation ("com.google.code.gson:gson:2.8.8")
-    implementation ("org.osmdroid:osmdroid-android:6.1.10")
-    implementation ("com.google.android.material:material:1.4.0")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
-    implementation ("com.google.firebase:firebase-auth-ktx:23.1.0")
-    implementation ("com.google.android.gms:play-services-auth:20.1.0")
-    implementation ("com.google.firebase:firebase-database-ktx:21.0.0")
+    implementation("com.google.firebase:firebase-auth-ktx:23.1.0")
+    implementation("com.google.firebase:firebase-database-ktx:21.0.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)

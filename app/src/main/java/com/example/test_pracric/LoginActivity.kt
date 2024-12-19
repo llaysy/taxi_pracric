@@ -2,6 +2,7 @@ package com.example.test_pracric
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
@@ -26,6 +27,8 @@ class LoginActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
+
+        Log.d("LoginActivity", "LoginActivity started")
 
         tvRedirectSignUp = findViewById(R.id.tvRedirectSignUp)
         btnLogin = findViewById(R.id.btnLogin)
@@ -86,22 +89,29 @@ class LoginActivity : AppCompatActivity() {
 
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                Log.d("LoginActivity", "Data snapshot exists: ${dataSnapshot.exists()}") // Логируем, существует ли снимок данных
+
                 if (dataSnapshot.exists()) {
-                    val driver = dataSnapshot.child("isDriver").getValue(Boolean::class.java) ?: false
-                    val intent = if (driver) {
+                    val isDriver = dataSnapshot.child("driver").getValue(Boolean::class.java) ?: false
+                    Log.d("LoginActivity", "User isDriver: $isDriver") // Логируем значение isDriver
+
+                    // Перенаправляем пользователя на соответствующую активность
+                    val intent = if (isDriver) {
                         Intent(this@LoginActivity, DriverHomeActivity::class.java)
                     } else {
                         Intent(this@LoginActivity, HomeActivity::class.java)
                     }
                     startActivity(intent)
+                    finish() // Закрываем текущую активность
                 } else {
-                    // Если пользователь не найден, перенаправляем в HomeActivity
+                    Log.d("LoginActivity", "User not found in drivers, redirecting to HomeActivity")
                     startActivity(Intent(this@LoginActivity, HomeActivity::class.java))
+                    finish() // Закрываем текущую активность
                 }
-                finish() // Закрываем текущую активность
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("LoginActivity", "Database error: ${databaseError.message}")
                 Toast.makeText(this@LoginActivity, "Ошибка получения данных: ${databaseError.message}", Toast.LENGTH_SHORT).show()
             }
         })

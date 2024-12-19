@@ -17,6 +17,18 @@
         android:theme="@style/Theme.Test_pracric"
         tools:targetApi="31">
         <activity
+            android:name=".doc.RegistrationCertificateActivity"
+            android:exported="false" />
+        <activity
+            android:name=".doc.VehiclePassportActivity"
+            android:exported="false" />
+        <activity
+            android:name=".doc.RightsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".doc.DocumentsActivity"
+            android:exported="false" />
+        <activity
             android:name=".MapsActivity"
             android:exported="false" />
         <activity
@@ -60,6 +72,7 @@
                     android:scheme="https" /> <!-- Замените на ваш фактический хост -->
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/MAPS_API_KEY" />

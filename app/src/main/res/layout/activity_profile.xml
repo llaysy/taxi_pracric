@@ -143,16 +143,21 @@
         android:layout_marginBottom="8dp"
         android:layout_marginStart="39dp"/>
 
-<!--    <TextView-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Экстренные контакты"-->
-<!--        android:drawableLeft="@drawable/ic_emergency"-->
-<!--        android:drawablePadding="8dp"-->
-<!--        android:textSize="16sp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        tools:ignore="UseCompatTextViewDrawableXml" -->
-<!--        />-->
+
+        <TextView
+            android:id="@+id/documentsTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Документы"
+            android:drawableLeft="@drawable/ic_documents"
+            android:drawableRight="@drawable/ic_next"
+            android:drawablePadding="8dp"
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="gone"/>
+
 
     </LinearLayout>
 
