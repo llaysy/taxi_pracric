@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.test_pracric.R
+import com.example.test_pracric.doc.RightsActivity
 
 class DocumentsActivity : AppCompatActivity() {
 

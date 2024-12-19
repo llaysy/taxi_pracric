@@ -6,20 +6,30 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".LoginActivity">
 
     <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="15dp"
-        android:paddingTop="40dp"
-        android:paddingBottom="40dp"
+        android:paddingTop="20dp"
+        android:paddingBottom="60dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Вход"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="30dp"
+            android:textColor="#18206F" />
 
         <EditText
             android:id="@+id/etEmailAddress"
@@ -27,8 +37,10 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="30dp"
             android:hint="Почта"
+            android:gravity="center"
             android:inputType="textEmailAddress"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:background="@drawable/edittext_background" />
 
         <EditText
             android:id="@+id/etPassword"
@@ -36,15 +48,19 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:hint="Пароль"
+            android:gravity="center"
             android:inputType="textPassword"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:background="@drawable/edittext_background" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Войти" />
+            android:text="Войти"
+            android:backgroundTint="#E5E371"
+            android:textColor="#18206F" />
 
         <TextView
             android:id="@+id/tvRedirectSignUp"
@@ -56,4 +72,5 @@
             android:textColor="#18206F"
             android:textSize="16sp" />
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

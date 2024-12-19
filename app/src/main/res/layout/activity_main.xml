@@ -6,9 +6,10 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     tools:context=".MainActivity">
 
-    <LinearLayout
+        <LinearLayout
         android:id="@+id/linearLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
@@ -21,14 +22,26 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent">
 
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Регистрация"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginBottom="30dp"
+            android:textColor="#18206F" />
+
         <EditText
             android:id="@+id/etSEmailAddress"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="15dp"
             android:hint="Почта"
+            android:gravity="center"
             android:inputType="textEmailAddress"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:background="@drawable/edittext_background" />
 
         <EditText
             android:id="@+id/etSName"
@@ -36,7 +49,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             android:hint="Имя"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:gravity="center"
+            android:background="@drawable/edittext_background" />
 
         <EditText
             android:id="@+id/etSPassword"
@@ -45,7 +60,9 @@
             android:layout_marginTop="15dp"
             android:hint="Пароль"
             android:inputType="textPassword"
-            android:minHeight="48dp" />
+            android:gravity="center"
+            android:minHeight="48dp"
+            android:background="@drawable/edittext_background" />
 
         <EditText
             android:id="@+id/etSConfPassword"
@@ -54,14 +71,18 @@
             android:layout_marginTop="15dp"
             android:hint="Подтвердите пароль"
             android:inputType="textPassword"
-            android:minHeight="48dp" />
+            android:minHeight="48dp"
+            android:gravity="center"
+            android:background="@drawable/edittext_background" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnSSigned"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
-            android:text="Регистрация" />
+            android:text="Регистрация"
+            android:backgroundTint="#E5E371"
+            android:textColor="#18206F" />
 
         <TextView
             android:id="@+id/tvRedirectLogin"
@@ -72,15 +93,21 @@
             android:text="Уже есть аккаунт!"
             android:textColor="#18206F"
             android:textSize="16sp" />
+        </LinearLayout>
 
-        <Button
-            android:id="@+id/btnRegisterAsDriver"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/btnSSigned"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="16dp"
-            android:text="Зарегистрироваться как водитель" />
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/btnRegisterAsDriver"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="20dp"
+        android:text="Зарегистрироваться как водитель"
+        android:backgroundTint="#E5E371"
+        android:textColor="#18206F"
+        android:gravity="center"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

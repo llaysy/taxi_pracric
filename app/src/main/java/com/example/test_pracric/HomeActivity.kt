@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -127,20 +128,29 @@ class HomeActivity : AppCompatActivity() {
 
     private fun showPaymentMethodDialog() {
         val paymentMethods = arrayOf("Наличные", "Перевод на карту")
+        val icons = intArrayOf(R.drawable.ic_cash, R.drawable.ic_card) // Замените на ваши ресурсы иконок
 
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Выберите способ оплаты")
+        val dialogView = layoutInflater.inflate(R.layout.dialog_payment_method, null)
+        builder.setView(dialogView)
 
-        builder.setItems(paymentMethods) { dialog, which ->
-            val selectedMethod = paymentMethods[which]
+        val paymentMethodsList = dialogView.findViewById<ListView>(R.id.paymentMethodsList)
+        val adapter = PaymentMethodAdapter(this, paymentMethods, icons)
+        paymentMethodsList.adapter = adapter
+
+        builder.setNegativeButton("Отмена") { dialog, _ -> dialog.dismiss() }
+        val dialog = builder.create()
+        dialog.show()
+
+        paymentMethodsList.setOnItemClickListener { _, _, position, _ ->
+            val selectedMethod = paymentMethods[position]
             paymentMethodLabel.text = "Способ оплаты: $selectedMethod"
 
             // Обновить способ оплаты в базе данных
             updatePaymentMethodInDatabase(selectedMethod)
-        }
 
-        builder.setNegativeButton("Отмена") { dialog, _ -> dialog.dismiss() }
-        builder.show()
+            dialog.dismiss()
+        }
     }
 
     private fun updatePaymentMethodInDatabase(selectedMethod: String) {

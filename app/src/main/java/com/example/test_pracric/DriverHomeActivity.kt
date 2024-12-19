@@ -24,18 +24,20 @@ class DriverHomeActivity : AppCompatActivity() {
     private lateinit var profilePhone: TextView
     private lateinit var logoutText: TextView
     private lateinit var hamburgerIcon: ImageView
+    private lateinit var profileText: TextView // Добавляем переменную для profile_text
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_driver_home)
 
         auth = FirebaseAuth.getInstance()
-        drawerLayout = findViewById(R.id.drawer_layout) // Инициализация DrawerLayout
+        drawerLayout = findViewById(R.id.drawer_layout)
         profileAvatar = findViewById(R.id.profile_avatar)
         profileName = findViewById(R.id.profile_name)
         profilePhone = findViewById(R.id.profile_phone)
         logoutText = findViewById(R.id.logout_text)
         hamburgerIcon = findViewById(R.id.hamburger_icon)
+        profileText = findViewById(R.id.profile_text) // Инициализируем profile_text
 
         // Получаем данные водителя из Firebase
         val userId = auth.currentUser?.uid
@@ -57,6 +59,13 @@ class DriverHomeActivity : AppCompatActivity() {
         // Обработчик нажатия на иконку "гамбургер"
         hamburgerIcon.setOnClickListener {
             openDrawer()
+        }
+
+        // Обработчик нажатия на текст "Профиль"
+        profileText.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java)
+            startActivity(intent)
+            drawerLayout.close() // Закрываем боковое меню после нажатия
         }
     }
 

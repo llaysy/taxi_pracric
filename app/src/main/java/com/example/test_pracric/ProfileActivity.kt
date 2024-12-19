@@ -8,6 +8,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.example.test_pracric.doc.DocumentsActivity
+import com.example.test_pracric.user.DriverData
+import com.example.test_pracric.user.UserData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -49,7 +51,7 @@ class ProfileActivity : AppCompatActivity() {
         }
 
         backButton.setOnClickListener {
-            navigateBack()
+            onBackButtonClicked()
         }
 
         documentsTextView.setOnClickListener {
@@ -59,36 +61,25 @@ class ProfileActivity : AppCompatActivity() {
     }
 
     private fun checkUserRole(userId: String) {
-        database.child("users").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+        Log.d("ProfileActivity", "Checking user role for userId: $userId")
+
+        // Сначала проверяем, является ли пользователь водителем
+        database.child("drivers").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    val isDriver = dataSnapshot.child("isDriver").getValue(Boolean::class.java) ?: false
-                    Log.d("ProfileActivity", "isDriver: $isDriver") // Проверка значения
-
-                    val name = dataSnapshot.child("name").getValue(String::class.java) ?: "Не указано"
-                    profileName.text = name
-
-                    if (isDriver) {
-                        // Убедитесь, что вы получаете правильные данные для водителя
-                        phoneTextView.text = dataSnapshot.child("phone").getValue(String::class.java) ?: "Не указано"
+                    // Пользователь найден в группе водителей
+                    val driverData = dataSnapshot.getValue(DriverData::class.java)
+                    driverData?.let {
+                        profileName.text = it.fullName // Измените на правильное поле
+                        emailTextView.text = it.email
+                        phoneTextView.text = it.phoneNumber
                         genderTextView.text = "Не указан"
                         dobTextView.text = "Не указано"
-
-                        // Показать текст "Документы"
                         documentsTextView.visibility = View.VISIBLE
-                        Log.d("ProfileActivity", "Documents should be visible for driver.")
-                    } else {
-                        // Для обычных пользователей
-                        phoneTextView.text = dataSnapshot.child("phone").getValue(String::class.java) ?: "Не указано"
-                        genderTextView.text = dataSnapshot.child("gender").getValue(String::class.java) ?: "Не указан"
-                        dobTextView.text = dataSnapshot.child("dob").getValue(String::class.java) ?: "Не указано"
-
-                        // Скрыть текст "Документы"
-                        documentsTextView.visibility = View.GONE
-                        Log.d("ProfileActivity", "Documents are hidden for regular user.")
                     }
                 } else {
-                    Log.d("ProfileActivity", "User data not found.")
+                    // Если не найден в группе водителей, проверяем группу пользователей
+                    checkPassengerUser(userId)
                 }
             }
 
@@ -98,27 +89,68 @@ class ProfileActivity : AppCompatActivity() {
         })
     }
 
-    private fun navigateBack() {
+    private fun checkPassengerUser(userId: String) {
+        database.child("users").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Пользователь найден в группе пассажиров
+                    val userData = dataSnapshot.getValue(UserData::class.java)
+                    userData?.let {
+                        profileName.text = it.name
+                        emailTextView.text = it.email
+                        phoneTextView.text = "Не указано" // Номер телефона для пассажиров не указан
+                        genderTextView.text = it.gender ?: "Не указан"
+                        dobTextView.text = it.dob ?: "Не указано"
+                        documentsTextView.visibility = View.GONE
+                    }
+                } else {
+                    Log.d("ProfileActivity", "User data not found for userId: $userId")
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("ProfileActivity", "Database error: ${databaseError.message}")
+            }
+        })
+    }
+
+    private fun onBackButtonClicked() {
         val currentUser = auth.currentUser
         if (currentUser != null) {
-            database.child("users").child(currentUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
+            // Проверяем сначала группу водителей
+            database.child("drivers").child(currentUser.uid).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(dataSnapshot: DataSnapshot) {
                     if (dataSnapshot.exists()) {
-                        val isDriver = dataSnapshot.child("isDriver").getValue(Boolean::class.java) ?: false
-                        val intent = if (isDriver) {
-                            Intent(this@ProfileActivity, DriverHomeActivity::class.java)
-                        } else {
-                            Intent(this@ProfileActivity, HomeActivity::class.java)
-                        }
+                        // Если пользователь водитель, переходим в DriverHomeActivity
+                        val intent = Intent(this@ProfileActivity, DriverHomeActivity::class.java)
                         startActivity(intent)
-                        finish()
+                    } else {
+                        // Если не водитель, проверяем группу пользователей
+                        checkPassengerUserOnBack(currentUser.uid)
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    // Обработка возможных ошибок
+                    Log.e("ProfileActivity", "Database error: ${databaseError.message}")
                 }
             })
         }
     }
+
+    private fun checkPassengerUserOnBack(userId: String) {
+        database.child("users").child(userId).addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    // Если пользователь пассажир, переходим в HomeActivity
+                    val intent = Intent(this@ProfileActivity, HomeActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e("ProfileActivity", "Database error: ${databaseError.message}")
+            }
+        })
+    }
+
 }

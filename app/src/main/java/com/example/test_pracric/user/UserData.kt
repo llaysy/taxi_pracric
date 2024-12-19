@@ -6,5 +6,7 @@ data class UserData(
     val rating: Float = 5.00f, // Устанавливаем значение по умолчанию
     val isDriver: Boolean = false,
     val location: String = "", // Местоположение
+    val gender: String = "",
+    val dob: String = "",
     val paymentMethod: String = "" // Способ оплаты
 )

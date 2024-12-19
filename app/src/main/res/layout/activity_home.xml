@@ -88,7 +88,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:gravity="center">
+            android:layout_marginTop="40dp">
 
             <TextView
                 android:id="@+id/profile_text"
@@ -97,8 +97,8 @@
                 android:text="Профиль"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"/>
+                android:gravity="start"
+                android:layout_marginBottom="20dp"/>
 
             <TextView
                 android:id="@+id/settings_text"
@@ -107,8 +107,8 @@
                 android:text="Настройки"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"/>
+                android:gravity="start"
+                android:layout_marginBottom="20dp"/>
 
             <TextView
                 android:id="@+id/info_text"
@@ -117,8 +117,8 @@
                 android:text="Информация"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"/>
+                android:gravity="start"
+                android:layout_marginBottom="20dp"/>
 
             <TextView
                 android:id="@+id/location_label"
@@ -127,15 +127,15 @@
                 android:text="Местоположение"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"/>
+                android:gravity="start"
+                android:layout_marginBottom="20dp"/>
 
             <TextView
                 android:id="@+id/profile_location_value"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:gravity="center"
+                android:gravity="start"
                 android:layout_marginBottom="8dp"/>
 
             <TextView
@@ -145,8 +145,8 @@
                 android:text="Способ оплаты"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:gravity="center"
-                android:layout_marginBottom="8dp"
+                android:gravity="start"
+                android:layout_marginBottom="20dp"
                 android:clickable="true"
                 android:focusable="true"/>
 
@@ -155,7 +155,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="14sp"
-                android:gravity="center"
+                android:gravity="start"
                 android:layout_marginBottom="8dp"
                 android:visibility="gone"/>
         </LinearLayout>
