@@ -3,15 +3,18 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="16dp">
 
     <TextView
         android:id="@+id/orderDetailsTextView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Детали заказа"
-        android:textSize="18sp"
+        android:textSize="24sp"
         android:layout_marginTop="16dp"
+        android:textStyle="bold"
+        android:layout_gravity="center"
         android:padding="16dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -19,9 +22,11 @@
 
     <Button
         android:id="@+id/acceptButton"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:text="Принять"
+        android:textColor="#FFFFFF"
+        android:backgroundTint="#4CAF50"
         app:layout_constraintTop_toBottomOf="@id/orderDetailsTextView"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
@@ -29,12 +34,15 @@
 
     <Button
         android:id="@+id/rejectButton"
-        android:layout_width="wrap_content"
+        android:layout_width="130dp"
         android:layout_height="wrap_content"
         android:text="Отклонить"
+        android:backgroundTint="#F44336"
+        android:textColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/orderDetailsTextView"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
         android:layout_marginEnd="16dp"/>
 
     <Button
@@ -43,6 +51,8 @@
         android:layout_height="wrap_content"
         android:text="Прибыл"
         android:visibility="gone"
+        android:backgroundTint="#FFEB3B"
+        android:textColor="#000000"
         app:layout_constraintTop_toBottomOf="@id/acceptButton"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"
@@ -53,6 +63,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Закончить поездку"
+        android:backgroundTint="#FFEB3B"
+        android:textColor="#000000"
         android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/arrivedButton"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,6 +76,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Закончить работу"
+        android:backgroundTint="#FFEB3B"
+        android:textColor="#000000"
         app:layout_constraintTop_toBottomOf="@id/finishButton"
         app:layout_constraintStart_toStartOf="parent"
         android:layout_marginTop="16dp"

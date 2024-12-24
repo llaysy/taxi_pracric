@@ -22,40 +22,57 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:layout_margin="4dp"
+        app:layout_constraintBottom_toBottomOf="parent">
 
-        <EditText
-            android:id="@+id/fromTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Откуда" />
+    <EditText
+        android:id="@+id/fromTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Откуда"
+        android:background="@drawable/edittext_background"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#7F7F7F" /> <!-- Цвет подсказки -->
 
-        <EditText
-            android:id="@+id/toTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Куда" />
+    <EditText
+        android:id="@+id/toTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Куда"
+        android:background="@drawable/edittext_background"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#7F7F7F" />
 
-        <EditText
-            android:id="@+id/priceTextView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Желаемая цена" />
+    <EditText
+        android:id="@+id/priceTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Желаемая цена"
+        android:background="@drawable/edittext_background"
+        android:padding="12dp"
+        android:textColor="#000000"
+        android:textColorHint="#7F7F7F" />
 
-        <Button
-            android:id="@+id/orderButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Заказать такси" />
+    <Button
+        android:id="@+id/orderButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Заказать такси"
+        android:backgroundTint="#FFEB3B"
+        android:textColor="#000000"
+    android:layout_marginTop="16dp" /> <!-- Отступ между кнопкой и полями ввода -->
 
-        <TextView
-            android:id="@+id/statusTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Статус: "
-            android:layout_marginTop="8dp" />
-    </LinearLayout>
+    <TextView
+        android:id="@+id/statusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Статус: "
+        android:layout_marginTop="8dp"
+        android:textColor="#000000" /> <!-- Цвет текста статуса -->
+</LinearLayout>
 
     <TextView
         android:id="@+id/driverInfoTextView"
@@ -63,10 +80,12 @@
         android:layout_height="wrap_content"
         android:text=""
         android:visibility="gone"
-        app:layout_constraintTop_toTopOf="parent"
         android:padding="16dp"
         android:textSize="16sp"
-        android:textColor="@android:color/black"/>
+        android:textColor="#000000"
+        android:background="@drawable/textview_background"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
         android:id="@+id/paymentReminderTextView"
@@ -74,8 +93,10 @@
         android:layout_height="wrap_content"
         android:text="Не забудьте оплатить поездку и приятной поездки"
         android:visibility="gone"
-        app:layout_constraintTop_toBottomOf="@+id/driverInfoTextView"
         android:padding="16dp"
         android:textSize="16sp"
-        android:textColor="@android:color/holo_red_dark"/>
+        android:textColor="#000000"
+        android:background="@drawable/textview_background"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/driverInfoTextView" />
 </androidx.constraintlayout.widget.ConstraintLayout>

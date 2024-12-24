@@ -57,9 +57,15 @@ class HomeActivity : AppCompatActivity() {
         btnWhereTo = findViewById(R.id.btnWhereTo) // Инициализация кнопки
         profileText = findViewById(R.id.profile_text) // Инициализация profile_text
         settingsText = findViewById(R.id.settings_text) // Initialize the settings_text
+        val infoText = findViewById<TextView>(R.id.info_text)
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
+
+        infoText.setOnClickListener {
+            val intent = Intent(this, InfoActivity::class.java)
+            startActivity(intent)
+        }
 
         // Обработчик нажатия на кнопку "Куда едем?"
         btnWhereTo.setOnClickListener {
