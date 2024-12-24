@@ -37,11 +37,11 @@
             android:layout_height="wrap_content"
             android:hint="Куда" />
 
-        <Button
-            android:id="@+id/showRouteButton"
+        <EditText
+            android:id="@+id/priceTextView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Показать маршрут" />
+            android:hint="Желаемая цена" />
 
         <Button
             android:id="@+id/orderButton"
@@ -50,11 +50,32 @@
             android:text="Заказать такси" />
 
         <TextView
-            android:id="@+id/costTextView"
+            android:id="@+id/statusTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Стоимость: 0₽"
+            android:text="Статус: "
             android:layout_marginTop="8dp" />
     </LinearLayout>
 
+    <TextView
+        android:id="@+id/driverInfoTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/black"/>
+
+    <TextView
+        android:id="@+id/paymentReminderTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Не забудьте оплатить поездку и приятной поездки"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@+id/driverInfoTextView"
+        android:padding="16dp"
+        android:textSize="16sp"
+        android:textColor="@android:color/holo_red_dark"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

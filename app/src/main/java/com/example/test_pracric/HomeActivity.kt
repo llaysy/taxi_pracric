@@ -23,7 +23,6 @@ import com.google.firebase.database.ValueEventListener
 
 class HomeActivity : AppCompatActivity() {
 
-    private lateinit var tvWelcome: TextView
     private lateinit var profileName: TextView
     private lateinit var profileLocation: TextView
     private lateinit var profilePaymentMethod: TextView
@@ -37,6 +36,7 @@ class HomeActivity : AppCompatActivity() {
     private lateinit var paymentMethodLabel: TextView
     private lateinit var btnWhereTo: Button // Кнопка "Куда едем?"
     private lateinit var profileText: TextView // Добавлено для профиля
+    private lateinit var settingsText: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,7 +45,6 @@ class HomeActivity : AppCompatActivity() {
         Log.d("HomeActivity", "HomeActivity started")
 
         // Инициализация элементов
-        tvWelcome = findViewById(R.id.tvWelcome)
         profileName = findViewById(R.id.profile_name)
         profileLocation = findViewById(R.id.profile_location_value)
         profilePaymentMethod = findViewById(R.id.profile_payment_method_value)
@@ -57,6 +56,7 @@ class HomeActivity : AppCompatActivity() {
         paymentMethodLabel = findViewById(R.id.payment_method_label)
         btnWhereTo = findViewById(R.id.btnWhereTo) // Инициализация кнопки
         profileText = findViewById(R.id.profile_text) // Инициализация profile_text
+        settingsText = findViewById(R.id.settings_text) // Initialize the settings_text
 
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
@@ -64,6 +64,11 @@ class HomeActivity : AppCompatActivity() {
         // Обработчик нажатия на кнопку "Куда едем?"
         btnWhereTo.setOnClickListener {
             val intent = Intent(this, MapsActivity::class.java)
+            startActivity(intent)
+        }
+
+        settingsText.setOnClickListener {
+            val intent = Intent(this, SettingsActivity::class.java)
             startActivity(intent)
         }
 
@@ -94,7 +99,6 @@ class HomeActivity : AppCompatActivity() {
                         profileLocation.text = userData.location
                         profilePaymentMethod.text = userData.paymentMethod
                         profileRating.text = "Рейтинг: ${userData.rating}"
-                        tvWelcome.text = "Добро пожаловать, ${userData.name}!"
                         paymentMethodLabel.text = "Способ оплаты: ${userData.paymentMethod}"
                     } else {
                         Toast.makeText(this@HomeActivity, "Данные пользователя не найдены", Toast.LENGTH_SHORT).show()
@@ -105,8 +109,6 @@ class HomeActivity : AppCompatActivity() {
                     Toast.makeText(this@HomeActivity, "Ошибка получения данных: ${error.message}", Toast.LENGTH_SHORT).show()
                 }
             })
-        } else {
-            tvWelcome.text = "Добро пожаловать!"
         }
 
         // Обработчик нажатия на способ оплаты

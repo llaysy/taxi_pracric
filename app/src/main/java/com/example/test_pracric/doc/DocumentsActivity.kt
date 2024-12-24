@@ -4,12 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.ImageView
 import android.widget.LinearLayout
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.example.test_pracric.R
-import com.example.test_pracric.doc.RightsActivity
+import com.example.test_pracric.ProfileActivity
 
 class DocumentsActivity : AppCompatActivity() {
 
@@ -41,6 +38,8 @@ class DocumentsActivity : AppCompatActivity() {
         // Обработчик для кнопки "Назад"
         val backButton: ImageView = findViewById(R.id.backButton)
         backButton.setOnClickListener {
+            val intent = Intent(this, ProfileActivity::class.java) // Изменено для перехода на ProfileActivity
+            startActivity(intent)
             finish() // Закрыть текущую активность
         }
     }

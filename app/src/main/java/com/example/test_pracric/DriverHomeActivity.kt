@@ -2,11 +2,12 @@ package com.example.test_pracric
 
 import android.content.Intent
 import android.os.Bundle
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import com.example.test_pracric.user.DriverData
 import com.google.firebase.auth.FirebaseAuth
@@ -24,7 +25,8 @@ class DriverHomeActivity : AppCompatActivity() {
     private lateinit var profilePhone: TextView
     private lateinit var logoutText: TextView
     private lateinit var hamburgerIcon: ImageView
-    private lateinit var profileText: TextView // Добавляем переменную для profile_text
+    private lateinit var profileText: TextView
+    private lateinit var btnWhereTo: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,35 +39,37 @@ class DriverHomeActivity : AppCompatActivity() {
         profilePhone = findViewById(R.id.profile_phone)
         logoutText = findViewById(R.id.logout_text)
         hamburgerIcon = findViewById(R.id.hamburger_icon)
-        profileText = findViewById(R.id.profile_text) // Инициализируем profile_text
+        profileText = findViewById(R.id.profile_text)
+        btnWhereTo = findViewById(R.id.btnWhereTo)
 
-        // Получаем данные водителя из Firebase
         val userId = auth.currentUser?.uid
         userId?.let {
             loadDriverData(it)
         }
 
-        // Обработчик нажатия на аватар профиля
         profileAvatar.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
         }
 
-        // Обработчик выхода из аккаунта
         logoutText.setOnClickListener {
             showLogoutConfirmationDialog()
         }
 
-        // Обработчик нажатия на иконку "гамбургер"
         hamburgerIcon.setOnClickListener {
             openDrawer()
         }
 
-        // Обработчик нажатия на текст "Профиль"
         profileText.setOnClickListener {
             val intent = Intent(this, ProfileActivity::class.java)
             startActivity(intent)
-            drawerLayout.close() // Закрываем боковое меню после нажатия
+            drawerLayout.close()
+        }
+
+        btnWhereTo.setOnClickListener {
+            goOnline()
+            val intent = Intent(this, DriverOrderActivity::class.java)
+            startActivity(intent)
         }
     }
 
@@ -114,5 +118,11 @@ class DriverHomeActivity : AppCompatActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
         finish()
+    }
+
+    private fun goOnline() {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
+        val driverStatusRef = FirebaseDatabase.getInstance().getReference("drivers").child(userId).child("onlineStatus")
+        driverStatusRef.setValue(true)
     }
 }
