@@ -29,9 +29,19 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var sharedPreferences: SharedPreferences
+    private lateinit var ordersRef: DatabaseReference
+    private lateinit var mMap: GoogleMap
+
+    // UI Components
     private lateinit var fromTextView: EditText
     private lateinit var toTextView: EditText
     private lateinit var priceTextView: EditText
@@ -39,19 +49,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var driverInfoTextView: TextView
     private lateinit var paymentReminderTextView: TextView
     private lateinit var addressContainer: View
-    private lateinit var ordersRef: DatabaseReference
-    private lateinit var sharedPreferences: SharedPreferences
-    private lateinit var mapFragment: SupportMapFragment
-    private lateinit var mMap: GoogleMap
     private var currentOrderId: String? = null
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_maps)
 
+        initViews()
+        supportFragmentManager.findFragmentById(R.id.map)?.view?.visibility = View.VISIBLE
         sharedPreferences = getSharedPreferences("UserPreferences", Context.MODE_PRIVATE)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
+        loadSavedData()
+
+        ordersRef = FirebaseDatabase.getInstance().getReference("orders")
+
+        findViewById<Button>(R.id.orderButton).setOnClickListener { orderTaxi() }
+        setupMap()
+    }
+
+    private fun initViews() {
         fromTextView = findViewById(R.id.fromTextView)
         toTextView = findViewById(R.id.toTextView)
         priceTextView = findViewById(R.id.priceTextView)
@@ -59,19 +76,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         driverInfoTextView = findViewById(R.id.driverInfoTextView)
         paymentReminderTextView = findViewById(R.id.paymentReminderTextView)
         addressContainer = findViewById(R.id.addressContainer)
+    }
 
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+    private fun setupMap() {
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
-
-        // Инициализация клиента для определения местоположения
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
-
-        loadSavedData()
-
-        ordersRef = FirebaseDatabase.getInstance().getReference("orders")
-
-        val orderButton: Button = findViewById(R.id.orderButton)
-        orderButton.setOnClickListener { orderTaxi() }
     }
 
     private fun saveData() {
@@ -80,7 +89,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val price = priceTextView.text.toString()
 
         if (fromAddress.isEmpty() || toAddress.isEmpty() || price.isEmpty()) {
-            Toast.makeText(this, "Пожалуйста, введите все данные.", Toast.LENGTH_SHORT).show()
+            showToast("Пожалуйста, введите все данные.")
             return
         }
 
@@ -91,17 +100,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             apply()
         }
 
-        Toast.makeText(this, "Данные сохранены.", Toast.LENGTH_SHORT).show()
+        showToast("Данные сохранены.")
     }
 
     private fun loadSavedData() {
-        val fromAddress = sharedPreferences.getString("fromAddress", "")
-        val toAddress = sharedPreferences.getString("toAddress", "")
-        val price = sharedPreferences.getString("price", "")
-
-        fromTextView.setText(fromAddress)
-        toTextView.setText(toAddress)
-        priceTextView.setText(price)
+        fromTextView.setText(sharedPreferences.getString("fromAddress", ""))
+        toTextView.setText(sharedPreferences.getString("toAddress", ""))
+        priceTextView.setText(sharedPreferences.getString("price", ""))
     }
 
     private fun orderTaxi() {
@@ -112,8 +117,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val toAddress = toTextView.text.toString()
         val price = priceTextView.text.toString()
 
-        val currentUser = FirebaseAuth.getInstance().currentUser
-        val userId = currentUser?.uid ?: return
+        val userId = FirebaseAuth.getInstance().currentUser?.uid ?: return
         val userRef = FirebaseDatabase.getInstance().getReference("users").child(userId)
 
         userRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -122,55 +126,55 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 val paymentMethod = snapshot.child("paymentMethod").getValue(String::class.java) ?: "Неизвестно"
 
                 val newOrderId = ordersRef.push().key ?: return
-
-                val orderData = OrderData(
-                    fromAddress = fromAddress,
-                    toAddress = toAddress,
-                    price = price,
-                    status = "pending",
-                    userId = userId,
-                    userRating = userRating,
-                    paymentMethod = paymentMethod
-                )
+                val orderData = OrderData(fromAddress, toAddress, price, "pending", userId, userRating, paymentMethod)
 
                 ordersRef.child(newOrderId).setValue(orderData)
                 currentOrderId = newOrderId
 
-                ordersRef.child(newOrderId).child("status").addValueEventListener(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        when (snapshot.getValue(String::class.java)) {
-                            "accepted" -> {
-                                statusTextView.visibility = View.GONE
-                                addressContainer.visibility = View.GONE
-                                driverInfoTextView.visibility = View.VISIBLE
-                                paymentReminderTextView.visibility = View.VISIBLE
-
-                                supportFragmentManager.beginTransaction().hide(mapFragment).commit()
-
-                                loadDriverInfo(newOrderId)
-                            }
-                            "rejected" -> {
-                                statusTextView.text = "Ваш заказ отклонен, ищем другого водителя"
-                            }
-                            "arrived" -> {
-                                Toast.makeText(this@MapsActivity, "Водитель прибыл", Toast.LENGTH_SHORT).show()
-                            }
-                            "finished" -> {
-                                showRatingDialog()
-                            }
-                        }
-                    }
-
-                    override fun onCancelled(error: DatabaseError) {
-                        Toast.makeText(this@MapsActivity, "Ошибка обновления статуса заказа.", Toast.LENGTH_SHORT).show()
-                    }
-                })
+                listenToOrderStatus(newOrderId)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@MapsActivity, "Ошибка получения данных пользователя.", Toast.LENGTH_SHORT).show()
+                showToast("Ошибка получения данных пользователя.")
             }
         })
+    }
+
+    private fun listenToOrderStatus(orderId: String) {
+        ordersRef.child(orderId).child("status").addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                when (snapshot.getValue(String::class.java)) {
+                    "accepted" -> {
+                        handleOrderAccepted(orderId)
+                    }
+                    "rejected" -> {
+                        statusTextView.text = "Ваш заказ отклонен, ищем другого водителя"
+                    }
+                    "arrived" -> {
+                        showToast("Водитель прибыл")
+                    }
+                    "finished" -> {
+                        showRatingDialog()
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                showToast("Ошибка обновления статуса заказа.")
+            }
+        })
+    }
+
+    private fun handleOrderAccepted(orderId: String) {
+        statusTextView.visibility = View.GONE
+        addressContainer.visibility = View.GONE
+        driverInfoTextView.visibility = View.VISIBLE
+        paymentReminderTextView.visibility = View.VISIBLE
+
+        // Скрыть карту
+        supportFragmentManager.findFragmentById(R.id.map)?.view?.visibility = View.GONE
+
+        loadDriverInfo(orderId)
     }
 
     private fun loadDriverInfo(orderId: String) {
@@ -178,118 +182,115 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val driverId = snapshot.child("driverId").getValue(String::class.java)
                 driverId?.let {
-                    val driversRef = FirebaseDatabase.getInstance().getReference("drivers").child(it)
-                    driversRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                        @SuppressLint("SetTextI18n")
+                    FirebaseDatabase.getInstance().getReference("drivers").child(it).addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(driverSnapshot: DataSnapshot) {
                             val driverName = driverSnapshot.child("fullName").getValue(String::class.java) ?: "Неизвестно"
                             val carNumber = driverSnapshot.child("carNumber").getValue(String::class.java) ?: "Неизвестно"
                             val rating = driverSnapshot.child("averageRating").getValue(Float::class.java) ?: 0.0f
                             val phoneNumber = driverSnapshot.child("phoneNumber").getValue(String::class.java) ?: "Неизвестно"
-                            driverInfoTextView.text = "Водитель: $driverName\nНомер машины: $carNumber\nРейтинг: $rating\nТелефон: $phoneNumber"
 
-                            val driverLocation = LatLng(driverSnapshot.child("latitude").getValue(Double::class.java) ?: 0.0,
-                                driverSnapshot.child("longitude").getValue(Double::class.java) ?: 0.0)
-                            mMap.addMarker(MarkerOptions().position(driverLocation).title("Водитель"))
-                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(driverLocation, 15f))
+                            driverInfoTextView.text = "Водитель: $driverName\nНомер машины: $carNumber\nРейтинг: $rating\nТелефон: $phoneNumber"
+                            loadDriverLocation(driverSnapshot)
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            Toast.makeText(this@MapsActivity, "Ошибка загрузки данных водителя.", Toast.LENGTH_SHORT).show()
+                            showToast("Ошибка загрузки данных водителя.")
                         }
                     })
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@MapsActivity, "Ошибка получения информации о заказе.", Toast.LENGTH_SHORT).show()
+                showToast("Ошибка получения информации о заказе.")
             }
         })
     }
 
+    private fun loadDriverLocation(driverSnapshot: DataSnapshot) {
+        val driverLocation = LatLng(
+            driverSnapshot.child("latitude").getValue(Double::class.java) ?: 0.0,
+            driverSnapshot.child("longitude").getValue(Double::class.java) ?: 0.0
+        )
+        mMap.addMarker(MarkerOptions().position(driverLocation).title("Водитель"))
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(driverLocation, 15f))
+    }
+
     private fun showRatingDialog() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Оцените водителя")
+        val builder = AlertDialog.Builder(this).apply {
+            setTitle("Оцените водителя")
+            val ratingBar = RatingBar(this@MapsActivity).apply {
+                numStars = 5
+                stepSize = 1f
+            }
+            setView(ratingBar)
 
-        val ratingBar = RatingBar(this)
-        ratingBar.numStars = 5
-        ratingBar.stepSize = 1f
-        builder.setView(ratingBar)
+            setPositiveButton("Оценить") { dialog, _ ->
+                updateDriverRating(ratingBar.rating)
+                dialog.dismiss()
+                showToast("Спасибо за вашу оценку!")
+                navigateToHomeActivity()
+            }
 
-        builder.setPositiveButton("Оценить") { dialog, _ ->
-            val rating = ratingBar.rating
-            updateDriverRating(rating)
-            dialog.dismiss()
-            Toast.makeText(this, "Спасибо за вашу оценку!", Toast.LENGTH_SHORT).show()
-            navigateToHomeActivity() // Переход на HomeActivity
+            setNegativeButton("Отмена") { dialog, _ ->
+                dialog.dismiss()
+                navigateToHomeActivity()
+            }
         }
-
-        builder.setNegativeButton("Отмена") { dialog, _ ->
-            dialog.dismiss()
-            navigateToHomeActivity() // Переход на HomeActivity
-        }
-
         builder.create().show()
     }
 
     private fun updateDriverRating(rating: Float) {
         currentOrderId?.let { orderId ->
-            val orderRef = ordersRef.child(orderId)
-            orderRef.child("driverId").addListenerForSingleValueEvent(object : ValueEventListener {
+            ordersRef.child(orderId).child("driverId").addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val driverId = snapshot.getValue(String::class.java) ?: return
                     val driverRef = FirebaseDatabase.getInstance().getReference("drivers").child(driverId)
                     driverRef.addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(driverSnapshot: DataSnapshot) {
-                            val driverData = driverSnapshot.getValue(DriverData::class.java) ?: return
-                            val currentRating = driverData.rating
-                            val newRating = (currentRating + rating) / 2 // Среднее арифметическое
+                            val currentRating = driverSnapshot.child("rating").getValue(Float::class.java) ?: return
+                            val newRating = (currentRating + rating) / 2
 
                             driverRef.child("rating").setValue(newRating)
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            Toast.makeText(this@MapsActivity, "Ошибка обновления рейтинга.", Toast.LENGTH_SHORT).show()
+                            showToast("Ошибка обновления рейтинга.")
                         }
                     })
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    Toast.makeText(this@MapsActivity, "Ошибка получения данных водителя.", Toast.LENGTH_SHORT).show()
+                    showToast("Ошибка получения данных водителя.")
                 }
             })
         }
     }
 
     private fun navigateToHomeActivity() {
-        val intent = Intent(this, HomeActivity::class.java)
-        startActivity(intent)
-        finish() // Закрываем текущую активность
+        startActivity(Intent(this, HomeActivity::class.java))
+        finish()
     }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
-
-        // Проверка разрешений
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
             ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-            // Запрос разрешений
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
             return
         }
 
-        // Получение последнего известного местоположения
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
-            if (location != null) {
-                val currentLocation = LatLng(location.latitude, location.longitude)
+            location?.let {
+                val currentLocation = LatLng(it.latitude, it.longitude)
                 mMap.addMarker(MarkerOptions().position(currentLocation).title("Вы здесь"))
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15f))
-            } else {
-                // Обработка случая, если местоположение недоступно
-                Toast.makeText(this, "Не удалось определить местоположение", Toast.LENGTH_SHORT).show()
-            }
+            } ?: showToast("Не удалось определить местоположение")
         }
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

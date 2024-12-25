@@ -117,20 +117,23 @@ class MainActivity : AppCompatActivity() {
             return
         }
 
+        // ИСПРАВИТЬ
+
+        // Регистрация пользователя
         // Регистрация пользователя
         auth.createUserWithEmailAndPassword(email, pass).addOnCompleteListener(this) { task ->
             if (task.isSuccessful) {
                 val userId = auth.currentUser?.uid
                 if (userId != null) {
-                    // Создание объекта пользователя с установкой driver в true
-                    val userData = UserData(name, email, 5.00f, true) // Убедитесь, что здесь true для водителя
+                    // Создание объекта пользователя с установкой driver в false
+                    val userData = UserData(name, email, 5.00f, false) // Убедитесь, что здесь false для обычного пользователя
 
-                    // Сохранение данных пользователя в Firebase
-                    database.child("drivers").child(userId).setValue(userData)
+                    // Сохранение данных пользователя в Firebase в разделе users
+                    database.child("users").child(userId).setValue(userData)
                         .addOnCompleteListener { dbTask ->
                             if (dbTask.isSuccessful) {
                                 Toast.makeText(this, "Регистрация успешна", Toast.LENGTH_SHORT).show()
-                                val intent = Intent(this, DriverHomeActivity::class.java) // Перенаправление на DriverHomeActivity
+                                val intent = Intent(this, HomeActivity::class.java) // Перенаправление на UserHomeActivity
                                 startActivity(intent)
                                 finish()
                             } else {

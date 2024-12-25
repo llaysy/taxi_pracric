@@ -29,10 +29,10 @@ class InfoActivity : AppCompatActivity() {
         // Список разработчиков
         val developers = listOf(
             Developer("llaysy", R.drawable.developer_llaysy),
-           // Developer("Ярцев Дмитрий", R.drawable.developer_dmitry),
+            Developer("Ярцев Дмитрий", R.drawable.developer_dmitry),
             Developer("Бакижанов Сардор", R.drawable.developer_sardor),
             Developer("Ефименко Андрей", R.drawable.developer_andrey),
-           // Developer("Царенко Никита", R.drawable.developer_nikita)
+            Developer("Царенко Никита", R.drawable.developer_nikita)
         )
 
         val adapter = DeveloperAdapter(developers)
